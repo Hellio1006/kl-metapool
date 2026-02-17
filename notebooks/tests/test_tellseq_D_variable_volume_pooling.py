@@ -1,35 +1,22 @@
-'''
-1.Checking whether the expected output file (Tellseq_iSeqnormpool_set_col19to24.txt) was created.
-2.Comparing the contents of that file to a known "expected" version of the file.
-'''
-
-# imports are executed
 import unittest
 import papermill as pm
 import tempfile
 from pathlib import Path
 import os
 
-# define constants variable
 NOTEBOOK = "tellseq_D_variable_volume_pooling.ipynb"
 PICKLIST_FNAME = "Tellseq_iSeqnormpool_set_col19to24.txt"
 
-# class definition is executed
 class TestTellseqD(unittest.TestCase):
-    #method 1. setup
-    # automatically before every test_... method-
+   
     def setUp(self):
-        self.notebooks_dir = os.path.dirname(os.path.dirname(__file__)) # /Users/seosonghee/Documents/KnightLab/kl-metapool/notebooks
-        self.test_output_dir = os.path.join(self.notebooks_dir, 'test_output') # the  "<project_root>/test_output"
+        self.notebooks_dir = os.path.dirname(os.path.dirname(__file__)) 
+        self.test_output_dir = os.path.join(self.notebooks_dir, 'test_output')
 
-    #method 2. test_iseqnorm_picklist (Starts with test_)
-        # creates the expected output file, 
-        # matches an expected “golden” file line-by-line.
 
     def test_iseqnorm_picklist(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
-            # Build the parameters to inject into the notebook
             run_params = {
                     'plate_df_set_fp': f"{self.test_output_dir}/QC/"
                                        f"Tellseq_plate_df_C_set_col19to24.txt",
@@ -40,14 +27,14 @@ class TestTellseqD(unittest.TestCase):
                     'iseqnormed_picklist_fbase':
                         f"{tmp_path}/Tellseq_iSeqnormpool"
             }
-            # run the notebook /test
+
             pm.execute_notebook(
                 input_path=f"{self.notebooks_dir}/{NOTEBOOK}",
                 output_path=f"{tmp_path}/test_iseqnorm_picklist.ipynb",
                 parameters=run_params,
                 log_output=True,
             )
-     # If the notebook didn’t write Tellseq_iSeqnormpool_set_col19to24.txt, the test fails here.
+
             out_iseqnormed_picklist_fp = f"{tmp_path}/{PICKLIST_FNAME}"
             self.assertTrue(os.path.exists(out_iseqnormed_picklist_fp),
                             msg="Notebook did not produce desired file.")
@@ -64,6 +51,5 @@ class TestTellseqD(unittest.TestCase):
                                          msg=("Lines of output" +
                                               "and test don't match"))
 
-# run the file directly
 if __name__ == "__main__":
     unittest.main()
